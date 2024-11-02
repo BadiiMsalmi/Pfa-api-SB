@@ -1,9 +1,13 @@
 package com.tekup.pfaapisb.Services;
 
+import com.tekup.pfaapisb.DTO.AuthenticationRequest;
 import com.tekup.pfaapisb.Models.*;
 import com.tekup.pfaapisb.Enum.Role;
 import com.tekup.pfaapisb.Repositories.*;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +31,7 @@ public class AuthService {
     private final CandidatRepository candidatRepository;
     private final RecruteurRepository recruteurRepository;
     private final AdministrateurRepository administrateurRepository;
+    private final UserEntityService userEntityService;
 
     public AuthenticationResponse register(RegisterRequest request) {
         var violations = registerRequestValidator.validate(request);
@@ -56,8 +61,6 @@ public class AuthService {
             candidat.setInscriptionDate(new Date());
             Candidat savedCandidat = candidatRepository.save(candidat);
             jwtToken = jwtService.generateToken(savedCandidat);
-            System.out.println("Generated token: " + jwtToken);
-            System.out.println("Token length: " + jwtToken.length());
             saveUserToken(savedCandidat, jwtToken);
 
         }else if(request.getRole() == Role.ROLE_RECRUTEUR){
@@ -88,14 +91,6 @@ public class AuthService {
         tokenRepository.save(token);
     }
 
-    private void revokeAllUserTokens(UserEntity user) {
-        var validUserTokens = tokenRepository.findByUserIdAndExpiredIsFalseAndRevokedIsFalse(user.getId());
-        validUserTokens.forEach(t -> {
-            t.setExpired(true);
-            t.setRevoked(true);
-        });
-        tokenRepository.saveAll(validUserTokens);
-    }
 
     private boolean isEmailAlreadyUsed(String email) {
         return candidatRepository.findByEmail(email).isPresent()
@@ -103,15 +98,7 @@ public class AuthService {
                 || administrateurRepository.findByEmail(email).isPresent();
     }
 
-    private UserEntity findUserByEmail(String email) {
-        return candidatRepository.findByEmail(email)
-                .map(candidat -> (UserEntity) candidat)
-                .or(() -> recruteurRepository.findByEmail(email).map(recruteur -> (UserEntity) recruteur))
-                .or(() -> administrateurRepository.findByEmail(email).map(administrateur -> (UserEntity) administrateur))
-                .orElseThrow(() -> new RuntimeException("User not found"));
-    }
 
-    /*
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         try {
             authenticationManager.authenticate(
@@ -124,8 +111,12 @@ public class AuthService {
                     .build();
         }
 
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        UserEntity user = null;
+        try {
+            user = userEntityService.loadUserByUsername(request.getEmail());
+        } catch (UsernameNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
         var jwtToken = jwtService.generateToken(user);
         revokeAllUserToken(user);
@@ -135,7 +126,7 @@ public class AuthService {
                 .token(jwtToken)
                 .build();
     }
-     */
+
 
     private void revokeAllUserToken(UserEntity user) {
         var validUserToken = tokenRepository.findByUserIdAndExpiredIsFalseAndRevokedIsFalse(user.getId());

@@ -1,5 +1,6 @@
 package com.tekup.pfaapisb.Models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,9 +23,11 @@ public class Recruteur extends UserEntity{
     private String entreprise;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Token> tokens;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Notification> notifications;
 
 

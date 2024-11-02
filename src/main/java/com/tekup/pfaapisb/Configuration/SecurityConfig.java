@@ -1,8 +1,13 @@
 package com.tekup.pfaapisb.Configuration;
 
+import com.tekup.pfaapisb.Services.LogoutService;
+import io.jsonwebtoken.io.IOException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -22,11 +27,7 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
-
-    @Bean
-    public LogoutHandler securityContextLogoutHandler() {
-        return new SecurityContextLogoutHandler();
-    }
+    private final LogoutService logoutService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -53,9 +54,19 @@ public class SecurityConfig {
                 // Configure logout handling
                 .logout((logout) -> logout
                         .logoutUrl("/api/v1/auth/logout")
-                        .addLogoutHandler(securityContextLogoutHandler())
+                        .addLogoutHandler(logoutService)
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-                );
+                )
+                .exceptionHandling( (exception) -> exception
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"error\": \"Not authenticated\"}");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                })
+                )
+                ;
+
 
         return http.build();
     }
