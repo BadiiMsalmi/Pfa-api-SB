@@ -1,5 +1,6 @@
 package com.tekup.pfaapisb.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,5 +28,6 @@ public class Notification {
 
     @ManyToOne
     @JoinColumn(name = "utilisateur_id")
+    @JsonBackReference
     private UserEntity user;
 }

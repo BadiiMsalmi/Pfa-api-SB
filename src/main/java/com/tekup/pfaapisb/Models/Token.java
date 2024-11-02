@@ -2,6 +2,7 @@ package com.tekup.pfaapisb.Models;
 
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.tekup.pfaapisb.Enum.TokenType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,5 +30,6 @@ public class Token {
 
     @ManyToOne
     @JoinColumn(name = "utilisateur_id")
+    @JsonBackReference
     private UserEntity user;
 }
