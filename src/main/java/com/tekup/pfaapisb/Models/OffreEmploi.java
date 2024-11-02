@@ -30,8 +30,8 @@ public class OffreEmploi {
     private double salaire;
 
     @ManyToOne
-    @JoinColumn(name = "entreprise_id")
-    private Entreprise entreprise;
+    @JoinColumn(name = "recruteur_id")
+    private Recruteur recruteur;
 
     @ManyToMany(mappedBy = "offres")
     private List<Candidat> candidats;
