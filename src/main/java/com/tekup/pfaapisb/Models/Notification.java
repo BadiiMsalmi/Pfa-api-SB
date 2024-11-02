@@ -11,8 +11,8 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Notification {
 
     @Id
@@ -26,7 +26,6 @@ public class Notification {
     private Date dateCreation;
 
     @ManyToOne
-    @JoinColumn (name= "utilisateur_id")
-    private Utilisateur utilisateur;
-
+    @JoinColumn(name = "utilisateur_id")
+    private UserEntity user;
 }

@@ -16,7 +16,10 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Administrateur extends UserEntity {
+public class Recruteur extends UserEntity{
+
+
+    private String entreprise;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Token> tokens;
@@ -24,8 +27,13 @@ public class Administrateur extends UserEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Notification> notifications;
 
+
+    @OneToMany(mappedBy = "recruteur", cascade = CascadeType.ALL)
+    private List<OffreEmploi> offres;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        return List.of(new SimpleGrantedAuthority("ROLE_RECRUTEUR"));
     }
+
 }
