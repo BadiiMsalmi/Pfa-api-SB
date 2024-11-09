@@ -25,6 +25,7 @@ public abstract class UserEntity implements UserDetails {
     private String email;
     private String password;
     private Role role;
+    private boolean profileCompleted = false;
 
     @Temporal(TemporalType.DATE)
     private Date inscriptionDate;
