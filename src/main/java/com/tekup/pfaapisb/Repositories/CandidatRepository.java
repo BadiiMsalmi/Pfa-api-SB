@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface CandidatRepository extends JpaRepository<Candidat, Integer> {
 
     Optional<Candidat> findByEmail(String email);
+
+    Candidat findCandidatByEmail(String email);
 }

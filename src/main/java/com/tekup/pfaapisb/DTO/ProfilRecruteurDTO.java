@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponse {
+public class ProfilRecruteurDTO {
 
-    private String token;
-    private String error;
-    private String message;
+    private String email;
+
+    private String entreprise;
 }

@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface RecruteurRepository extends JpaRepository<Recruteur, Integer> {
 
     Optional<Recruteur> findByEmail(String email);
+
+    Recruteur findRecruteursByEmail(String email);
 }

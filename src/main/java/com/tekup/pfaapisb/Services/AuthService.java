@@ -69,6 +69,8 @@ public class AuthService {
             recruteur.setFirstname(request.getFirstname());
             recruteur.setLastname(request.getLastname());
             recruteur.setEmail(request.getEmail());
+            recruteur.setInscriptionDate(new Date());
+            recruteur.setRole(Role.ROLE_RECRUTEUR);
             recruteur.setPassword(passwordEncoder.encode(request.getPassword()));
             Recruteur savedRecruteur = recruteurRepository.save(recruteur);
             jwtToken = jwtService.generateToken(savedRecruteur);
@@ -118,12 +120,18 @@ public class AuthService {
             throw new RuntimeException(e);
         }
 
+
         var jwtToken = jwtService.generateToken(user);
         revokeAllUserToken(user);
         saveUserToken(user, jwtToken);
-
+        if (user.isProfileCompleted()){
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .build();
+        }
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .error("Profile not completed")
                 .build();
     }
 

@@ -1,9 +1,12 @@
 package com.tekup.pfaapisb.Services;
 
+import com.tekup.pfaapisb.DTO.AuthenticationResponse;
+import com.tekup.pfaapisb.DTO.ProfilCandidatDTO;
 import com.tekup.pfaapisb.Models.Candidat;
+import com.tekup.pfaapisb.Models.Experience;
 import com.tekup.pfaapisb.Repositories.CandidatRepository;
+import com.tekup.pfaapisb.Validators.ObjectsValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.Optional;
 public class CandidatService {
 
     private final CandidatRepository candidatRepository;
+    private final ObjectsValidator<ProfilCandidatDTO> profilCandidatValidator;
 
     // Save a new Candidat
     public Candidat saveCandidat(Candidat candidat) {
@@ -58,4 +62,31 @@ public class CandidatService {
             return false;
         }
     }
+
+
+    public AuthenticationResponse completeCandidatProfile(ProfilCandidatDTO request) {
+        var violations = profilCandidatValidator.validate(request);
+        if (!violations.isEmpty()) {
+            return AuthenticationResponse.builder()
+                    .error(String.join(" \n ", violations))
+                    .build();
+        }
+
+        Candidat candidat = candidatRepository.findCandidatByEmail(request.getEmail());
+
+        candidat.setCv(request.getCv());
+        candidat.setCompetences(request.getCompetences());
+        for (Experience experience : request.getExperiences()) {
+            experience.setCandidat(candidat);
+        }
+        candidat.setExperiences(request.getExperiences());
+        candidat.setProfileCompleted(true);
+
+        candidatRepository.save(candidat);
+
+        return AuthenticationResponse.builder()
+                .message("Profile completed successfully")
+                .build();
+    }
+
 }
