@@ -22,12 +22,12 @@ public class ProfilController {
     private final RecruteurService recruteurService;
 
     @PostMapping("/candidat/completeProfile")
-    public ResponseEntity<AuthenticationResponse> completeProfileCandidat(@RequestBody ProfilCandidatDTO request) {
-        return ResponseEntity.ok(candidatService.completeCandidatProfile(request));
+    public void completeProfileCandidat(@RequestBody ProfilCandidatDTO request) {
+        candidatService.completeCandidatProfile(request);
     }
 
     @PostMapping("/recruteur/completeProfile")
-    public ResponseEntity<AuthenticationResponse> completeProfileRecruteur(@RequestBody ProfilRecruteurDTO request) {
-        return ResponseEntity.ok(recruteurService.completeRecruteurProfile(request));
+    public void completeProfileRecruteur(@RequestBody ProfilRecruteurDTO request) {
+        recruteurService.completeRecruteurProfile(request);
     }
 }

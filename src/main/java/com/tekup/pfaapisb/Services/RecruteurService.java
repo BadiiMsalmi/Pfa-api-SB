@@ -15,22 +15,13 @@ public class RecruteurService {
     private final ObjectsValidator<ProfilRecruteurDTO> profilRecruteurValidator;
     private final RecruteurRepository recruteurRepository;
 
-    public AuthenticationResponse completeRecruteurProfile(ProfilRecruteurDTO request) {
-        var violations = profilRecruteurValidator.validate(request);
-        if (!violations.isEmpty()) {
-            return AuthenticationResponse.builder()
-                    .error(String.join(" \n ", violations))
-                    .build();
-        }
+    public void completeRecruteurProfile(ProfilRecruteurDTO request) {
+        profilRecruteurValidator.validate(request);
 
         Recruteur recruteur = recruteurRepository.findRecruteursByEmail(request.getEmail());
         recruteur.setEntreprise(request.getEntreprise());
         recruteur.setProfileCompleted(true);
 
         recruteurRepository.save(recruteur);
-
-        return AuthenticationResponse.builder()
-                .message("Profile completed successfully")
-                .build();
     }
 }

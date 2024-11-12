@@ -4,7 +4,9 @@ import com.tekup.pfaapisb.DTO.AuthenticationRequest;
 import com.tekup.pfaapisb.Models.*;
 import com.tekup.pfaapisb.Enum.Role;
 import com.tekup.pfaapisb.Repositories.*;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,18 +36,11 @@ public class AuthService {
     private final UserEntityService userEntityService;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        var violations = registerRequestValidator.validate(request);
-        if (!violations.isEmpty()) {
-            return AuthenticationResponse.builder()
-                    .error(String.join(" \n ", violations))
-                    .build();
-        }
+        registerRequestValidator.validate(request);
 
         // Check email uniqueness
         if (isEmailAlreadyUsed(request.getEmail())) {
-            return AuthenticationResponse.builder()
-                    .error("Email already in use")
-                    .build();
+            throw new DataIntegrityViolationException("Email is already in use");
         }
 
         // Register user based on role
@@ -77,7 +72,7 @@ public class AuthService {
             saveUserToken(savedRecruteur, jwtToken);
 
         }else{
-            return AuthenticationResponse.builder().error("Role not supported").build();
+            throw new DataIntegrityViolationException("Role not supported");
         }
         return AuthenticationResponse.builder()
                 .token(jwtToken)
@@ -102,36 +97,25 @@ public class AuthService {
 
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        try {
+
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getEmail(),
                             request.getPassword()));
-        } catch (AuthenticationException ex) {
-            return AuthenticationResponse.builder()
-                    .error("Invalid email or password.")
-                    .build();
-        }
 
-        UserEntity user = null;
-        try {
-            user = userEntityService.loadUserByUsername(request.getEmail());
-        } catch (UsernameNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
+        UserEntity user = userEntityService.loadUserByUsername(request.getEmail());
 
         var jwtToken = jwtService.generateToken(user);
         revokeAllUserToken(user);
         saveUserToken(user, jwtToken);
         if (user.isProfileCompleted()){
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+            return AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .build();
         }
         return AuthenticationResponse.builder()
                 .token(jwtToken)
-                .error("Profile not completed")
+                .message("Profile not completed")
                 .build();
     }
 
