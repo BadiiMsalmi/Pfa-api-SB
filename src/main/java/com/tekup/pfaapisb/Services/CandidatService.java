@@ -64,13 +64,8 @@ public class CandidatService {
     }
 
 
-    public AuthenticationResponse completeCandidatProfile(ProfilCandidatDTO request) {
-        var violations = profilCandidatValidator.validate(request);
-        if (!violations.isEmpty()) {
-            return AuthenticationResponse.builder()
-                    .error(String.join(" \n ", violations))
-                    .build();
-        }
+    public void completeCandidatProfile(ProfilCandidatDTO request) {
+        profilCandidatValidator.validate(request);
 
         Candidat candidat = candidatRepository.findCandidatByEmail(request.getEmail());
 
@@ -84,9 +79,7 @@ public class CandidatService {
 
         candidatRepository.save(candidat);
 
-        return AuthenticationResponse.builder()
-                .message("Profile completed successfully")
-                .build();
+
     }
 
 }
