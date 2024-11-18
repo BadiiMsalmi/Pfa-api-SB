@@ -1,13 +1,10 @@
 package com.tekup.pfaapisb.Controllers;
 
-
-import com.tekup.pfaapisb.Models.UserEntity;
+import com.tekup.pfaapisb.DTO.UserDetailsDTO;
+import org.springframework.security.access.annotation.Secured;
 import com.tekup.pfaapisb.Services.UserEntityService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,8 +15,25 @@ public class UtilisateurController {
 
     private final UserEntityService userEntityService;
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/allUsers")
-    public List<UserEntity> getAllUsers() {
+    public List<UserDetailsDTO> getAllUsers() {
         return userEntityService.loadAllUsers();
     }
+
+    @GetMapping("/user/{id}")
+    public UserDetailsDTO getUserById(@PathVariable int id) {
+        return userEntityService.getUserById(id);
+    }
+
+
+    @Secured("ROLE_ADMIN")
+    @DeleteMapping("/user/{id}")
+    public void deleteUserById(@PathVariable int id) {
+        this.userEntityService.deleteUserById(id);
+    }
+
+
+
+
 }
