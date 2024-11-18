@@ -6,13 +6,9 @@ import com.tekup.pfaapisb.Enum.Role;
 import com.tekup.pfaapisb.Repositories.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.tekup.pfaapisb.DTO.AuthenticationResponse;
 import com.tekup.pfaapisb.DTO.RegisterRequest;
 import com.tekup.pfaapisb.Validators.ObjectsValidator;
