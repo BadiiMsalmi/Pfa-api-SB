@@ -1,5 +1,7 @@
 package com.tekup.pfaapisb.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,6 +33,7 @@ public class OffreEmploi {
 
     @ManyToOne
     @JoinColumn(name = "recruteur_id")
+    @JsonBackReference
     private Recruteur recruteur;
 
     @ManyToMany(mappedBy = "offres")

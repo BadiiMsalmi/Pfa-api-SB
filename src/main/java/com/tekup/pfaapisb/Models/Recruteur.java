@@ -32,6 +32,7 @@ public class Recruteur extends UserEntity{
 
 
     @OneToMany(mappedBy = "recruteur", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<OffreEmploi> offres;
 
     @Override
