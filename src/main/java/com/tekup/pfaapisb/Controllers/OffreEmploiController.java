@@ -5,10 +5,9 @@ import com.tekup.pfaapisb.DTO.OffreEmploiIDTO;
 import com.tekup.pfaapisb.Models.OffreEmploi;
 import com.tekup.pfaapisb.Services.OffreEmploiService;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.List;
 @RequestMapping("/api/offres")
 @AllArgsConstructor
 public class OffreEmploiController {
-
 
     private final OffreEmploiService offreEmploiService;
 
@@ -28,28 +26,46 @@ public class OffreEmploiController {
         return ResponseEntity.status(201).body(createdOffre);
     }
 
-    @GetMapping
+
+    @GetMapping("/allOffresByRec/{id}")
+    public ResponseEntity<List<OffreEmploi>> getAllOffresByRec(@PathVariable ("id") long id) {
+        List<OffreEmploi> offres = offreEmploiService.getAllOffresByRecruteur(id);
+        return ResponseEntity.ok(offres);
+    }
+
+    @Secured({"ROLE_ADMIN"})
+    @GetMapping("/allOffres")
     public ResponseEntity<List<OffreEmploi>> getAllOffres() {
         List<OffreEmploi> offres = offreEmploiService.getAllOffres();
         return ResponseEntity.ok(offres);
     }
 
+
     @GetMapping("trouver/{id}")
-    public ResponseEntity<OffreEmploi> getOffreById(@PathVariable Long id) {
+    public ResponseEntity<OffreEmploi> getOffreById(
+            @PathVariable Long id
+    ) {
         OffreEmploi offreEmploi = offreEmploiService.getOffreById(id)
                 .orElseThrow(() -> new RuntimeException("Offre non trouvée"));
         return ResponseEntity.ok(offreEmploi);
     }
 
-    @PutMapping("updateoffre/{id}")
-    public ResponseEntity<OffreEmploi> updateOffre(@PathVariable Long id, @RequestBody OffreEmploiIDTO offreEmploiDTO) {
-        OffreEmploi updatedOffre = offreEmploiService.updateOffre(id, offreEmploiDTO);
+    @Secured("ROLE_RECRUTEUR")
+    @PatchMapping("/updateoffre/{id}")
+    public ResponseEntity<OffreEmploi> updateOffre(
+            @PathVariable Long id,
+            @RequestBody OffreEmploiIDTO offreEmploiDTO,
+            Authentication authentication) {
+        OffreEmploi updatedOffre = offreEmploiService.updateOffre(id, offreEmploiDTO,authentication.getName());
         return ResponseEntity.ok(updatedOffre);
     }
 
     @DeleteMapping("deleteoffre/{id}")
-    public ResponseEntity<Void> deleteOffre(@PathVariable Long id) {
-        offreEmploiService.deleteOffre(id);
+    public ResponseEntity<Void> deleteOffre(
+            @PathVariable Long id,
+            Authentication authentication
+            ) {
+        offreEmploiService.deleteOffreById(id,authentication.getName());
         return ResponseEntity.noContent().build();
     }
 }
