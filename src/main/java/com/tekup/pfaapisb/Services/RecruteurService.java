@@ -24,4 +24,5 @@ public class RecruteurService {
 
         recruteurRepository.save(recruteur);
     }
+
 }
