@@ -1,5 +1,6 @@
 package com.tekup.pfaapisb.DTO;
 
+import com.tekup.pfaapisb.Models.Competence;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ public class OffreEmploiIDTO {
 
     private String titre;
     private String description;
-    private List<String> competences;
+    private List<Long> competences;
     private int experience;
     private String localisation;
     private double salaire;

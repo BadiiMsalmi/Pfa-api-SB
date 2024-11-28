@@ -1,6 +1,7 @@
 package com.tekup.pfaapisb.Models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,8 +25,13 @@ public class OffreEmploi {
     private String titre;
     private String description;
 
-    @ElementCollection
-    private List<String> competences;
+    @ManyToMany
+    @JoinTable(
+            name = "offreEmploi_competence",
+            joinColumns = @JoinColumn(name = "offre_id"),
+            inverseJoinColumns = @JoinColumn(name = "competence_id")
+    )
+    private List<Competence> competences;
 
     private int experience;
     private String localisation;
