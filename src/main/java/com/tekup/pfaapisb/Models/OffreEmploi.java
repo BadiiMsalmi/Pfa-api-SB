@@ -42,7 +42,8 @@ public class OffreEmploi {
     @JsonBackReference
     private Recruteur recruteur;
 
-    @ManyToMany(mappedBy = "offres")
-    private List<Candidat> candidats;
+    @OneToMany(mappedBy = "offre", cascade = CascadeType.ALL)
+    private List<Application> applications;
+
 
 }

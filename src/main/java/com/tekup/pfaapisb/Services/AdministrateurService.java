@@ -24,4 +24,11 @@ public class AdministrateurService {
                 .build();
     }
 
+    public CompetenceDTO deleteCompetenceById(long id) {
+        Competence competence = comptenceRepository.findById(id).get();
+        comptenceRepository.delete(competence);
+        return CompetenceDTO.builder()
+                .id(competence.getId())
+                .build();
+    }
 }

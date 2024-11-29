@@ -33,7 +33,7 @@ public class OffreEmploiController {
         return ResponseEntity.ok(offres);
     }
 
-    @Secured({"ROLE_ADMIN"})
+
     @GetMapping("/allOffres")
     public ResponseEntity<List<OffreEmploi>> getAllOffres() {
         List<OffreEmploi> offres = offreEmploiService.getAllOffres();
@@ -50,7 +50,7 @@ public class OffreEmploiController {
         return ResponseEntity.ok(offreEmploi);
     }
 
-    @Secured("ROLE_RECRUTEUR")
+
     @PatchMapping("/updateoffre/{id}")
     public ResponseEntity<OffreEmploi> updateOffre(
             @PathVariable Long id,
@@ -60,12 +60,13 @@ public class OffreEmploiController {
         return ResponseEntity.ok(updatedOffre);
     }
 
+    @Secured({"ROLE_RECRUTEUR","ROLE_ADMIN"})
     @DeleteMapping("deleteoffre/{id}")
     public ResponseEntity<Void> deleteOffre(
             @PathVariable Long id,
             Authentication authentication
             ) {
-        offreEmploiService.deleteOffreById(id,authentication.getName());
+        offreEmploiService.deleteOffreById(id,authentication.getName(),authentication);
         return ResponseEntity.noContent().build();
     }
 }

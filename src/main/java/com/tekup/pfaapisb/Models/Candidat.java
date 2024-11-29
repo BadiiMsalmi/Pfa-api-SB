@@ -21,6 +21,10 @@ public class Candidat extends UserEntity {
 
     private String cv;
 
+    @OneToMany(mappedBy = "candidat", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Application> applications;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Token> tokens;
@@ -29,25 +33,17 @@ public class Candidat extends UserEntity {
     @JsonManagedReference
     private List<Notification> notifications;
 
-
     @ElementCollection
     private List<String> competences;
 
     @OneToMany(mappedBy = "candidat", cascade = CascadeType.ALL)
     private List<Experience> experiences;
 
-
-    @ManyToMany
-    @JoinTable(
-            name = "candidat_offres",
-            joinColumns = @JoinColumn(name = "candidat_id"),
-            inverseJoinColumns = @JoinColumn(name = "offre_id")
-    )
-    private List<OffreEmploi> offres;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<OffreEmploi> offreEmploiSauvgarder;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_CANDIDAT"));
     }
-
 }

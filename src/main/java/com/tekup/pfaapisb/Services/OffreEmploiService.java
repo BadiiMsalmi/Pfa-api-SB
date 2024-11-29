@@ -58,12 +58,12 @@ public class OffreEmploiService {
     }
 
     @Transactional
-    public void deleteOffreById(Long id, String email) {
+    public void deleteOffreById(Long id, String email,Authentication authentication) {
         OffreEmploi offreEmploi = offreEmploiRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Offre non trouvée"));
 
         // Check if the recruiter owns the offer
-        if (!offreEmploi.getRecruteur().getEmail().equals(email)) {
+        if (!offreEmploi.getRecruteur().getEmail().equals(email) || authentication.getAuthorities().equals("ROLE_ADMIN")) {
             throw new RuntimeException("Vous n'êtes pas autorisé à supprimer cette offre.");
         }
 
