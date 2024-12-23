@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -20,5 +23,13 @@ public class Formation {
     private String titre;
     private String description;
     private String plateforme;
+
+    @ManyToMany
+    @JoinTable(
+            name = "formation_competence",
+            joinColumns = @JoinColumn(name = "formation_id"),
+            inverseJoinColumns = @JoinColumn(name = "competence_id")
+    )
+    private List<Competence> competences;
 
 }

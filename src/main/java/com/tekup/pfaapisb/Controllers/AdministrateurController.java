@@ -14,7 +14,7 @@ public class AdministrateurController {
 
     private final AdministrateurService administrateurService;
 
-    @Secured("ROLE_ADMIN")
+
     @PostMapping("/competence/addNew")
     public ResponseEntity<CompetenceDTO> addNewCompetence(@RequestBody CompetenceDTO competenceDTO){
         return ResponseEntity.ok(administrateurService.addNewCompetence(competenceDTO));

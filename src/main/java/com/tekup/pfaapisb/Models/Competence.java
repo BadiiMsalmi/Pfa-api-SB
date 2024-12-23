@@ -1,7 +1,6 @@
 package com.tekup.pfaapisb.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,5 +24,13 @@ public class Competence {
     @ManyToMany(mappedBy = "competences")
     @JsonIgnore
     private List<OffreEmploi> offres;
+
+    @ManyToMany(mappedBy = "competences")
+    @JsonIgnore
+    private List<Candidat> candidats;
+
+    @ManyToMany(mappedBy = "competences")
+    @JsonIgnore
+    private List<Formation> formations;
 
 }

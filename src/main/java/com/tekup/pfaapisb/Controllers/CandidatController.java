@@ -1,13 +1,18 @@
 package com.tekup.pfaapisb.Controllers;
 
+import com.tekup.pfaapisb.DTO.OffreEmploiSearchDTO;
 import com.tekup.pfaapisb.Models.Candidat;
+import com.tekup.pfaapisb.Models.OffreEmploi;
+import com.tekup.pfaapisb.Repositories.OffreEmploiCustomRepository;
 import com.tekup.pfaapisb.Services.CandidatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/candidats")
@@ -15,6 +20,8 @@ import java.util.Optional;
 public class CandidatController {
 
     private final CandidatService candidatService;
+
+    private final OffreEmploiCustomRepository customRepository;
 
     // Create new Candidat
     @PostMapping("/create")
@@ -60,4 +67,35 @@ public class CandidatController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+    @GetMapping("/savedJobs")
+    public ResponseEntity<List<OffreEmploi>> getSavedJobs(
+            Authentication authentication) {
+        List<OffreEmploi> savedOffers = candidatService.getSavedOffres(authentication.getName());
+        return ResponseEntity.ok(savedOffers);
+    }
+
+    @PostMapping("/searchOffre")
+    public ResponseEntity<List<OffreEmploiSearchDTO>> searchOffres(@RequestBody OffreEmploiSearchDTO request) {
+        List<OffreEmploi> offres = customRepository.searchOffres(
+                request.getTitre(),
+                request.getLocalisation(),
+                request.getExperience(),
+                request.getSalaire()
+        );
+
+        List<OffreEmploiSearchDTO> result = offres.stream()
+                .map(offre -> new OffreEmploiSearchDTO(
+                        offre.getId(),
+                        offre.getTitre(),
+                        offre.getDescription(),
+                        offre.getExperience(),
+                        offre.getLocalisation(),
+                        offre.getSalaire()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(result);
+    }
+
+
 }

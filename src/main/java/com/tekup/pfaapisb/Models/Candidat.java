@@ -33,13 +33,23 @@ public class Candidat extends UserEntity {
     @JsonManagedReference
     private List<Notification> notifications;
 
-    @ElementCollection
-    private List<String> competences;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "candidat_competences",
+            joinColumns = @JoinColumn(name = "candidat_id"),
+            inverseJoinColumns = @JoinColumn(name = "competence_id")
+    )
+    private List<Competence> competences;
 
-    @OneToMany(mappedBy = "candidat", cascade = CascadeType.ALL)
-    private List<Experience> experiences;
+    private int experiences;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @ManyToMany
+    @JoinTable(
+            name = "candidat_saved_offres",
+            joinColumns = @JoinColumn(name = "candidat_id"),
+            inverseJoinColumns = @JoinColumn(name = "offre_id")
+    )
+    @JsonManagedReference
     private List<OffreEmploi> offreEmploiSauvgarder;
 
     @Override

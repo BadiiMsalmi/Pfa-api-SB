@@ -1,8 +1,7 @@
 package com.tekup.pfaapisb.Models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.tekup.pfaapisb.Enum.OffreStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,9 +20,12 @@ public class OffreEmploi {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String titre;
     private String description;
+    private int experience;
+    private String localisation;
+    private double salaire;
+    private OffreStatus status;
 
     @ManyToMany
     @JoinTable(
@@ -33,10 +35,6 @@ public class OffreEmploi {
     )
     private List<Competence> competences;
 
-    private int experience;
-    private String localisation;
-    private double salaire;
-
     @ManyToOne
     @JoinColumn(name = "recruteur_id")
     @JsonBackReference
@@ -44,6 +42,4 @@ public class OffreEmploi {
 
     @OneToMany(mappedBy = "offre", cascade = CascadeType.ALL)
     private List<Application> applications;
-
-
 }

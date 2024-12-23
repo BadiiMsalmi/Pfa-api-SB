@@ -1,7 +1,7 @@
 package com.tekup.pfaapisb.Controllers;
 
 
-import com.tekup.pfaapisb.DTO.OffreEmploiIDTO;
+import com.tekup.pfaapisb.DTO.OffreEmploiDTO;
 import com.tekup.pfaapisb.Models.OffreEmploi;
 import com.tekup.pfaapisb.Services.OffreEmploiService;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/offres")
+@RequestMapping("/api/v1/offres")
 @AllArgsConstructor
 public class OffreEmploiController {
 
@@ -21,7 +21,7 @@ public class OffreEmploiController {
 
     @Secured("ROLE_RECRUTEUR")
     @PostMapping("/postOffre")
-    public ResponseEntity<OffreEmploi> createOffre(@RequestBody OffreEmploiIDTO offreEmploiDTO) {
+    public ResponseEntity<OffreEmploi> createOffre(@RequestBody OffreEmploiDTO offreEmploiDTO) {
         OffreEmploi createdOffre = offreEmploiService.createOffre(offreEmploiDTO);
         return ResponseEntity.status(201).body(createdOffre);
     }
@@ -41,7 +41,7 @@ public class OffreEmploiController {
     }
 
 
-    @GetMapping("trouver/{id}")
+    @GetMapping("trouverOffre/{id}")
     public ResponseEntity<OffreEmploi> getOffreById(
             @PathVariable Long id
     ) {
@@ -54,14 +54,14 @@ public class OffreEmploiController {
     @PatchMapping("/updateoffre/{id}")
     public ResponseEntity<OffreEmploi> updateOffre(
             @PathVariable Long id,
-            @RequestBody OffreEmploiIDTO offreEmploiDTO,
+            @RequestBody OffreEmploiDTO offreEmploiDTO,
             Authentication authentication) {
         OffreEmploi updatedOffre = offreEmploiService.updateOffre(id, offreEmploiDTO,authentication.getName());
         return ResponseEntity.ok(updatedOffre);
     }
 
     @Secured({"ROLE_RECRUTEUR","ROLE_ADMIN"})
-    @DeleteMapping("deleteoffre/{id}")
+    @DeleteMapping("/deleteoffre/{id}")
     public ResponseEntity<Void> deleteOffre(
             @PathVariable Long id,
             Authentication authentication
@@ -69,4 +69,26 @@ public class OffreEmploiController {
         offreEmploiService.deleteOffreById(id,authentication.getName(),authentication);
         return ResponseEntity.noContent().build();
     }
+
+    //sauvgarder offre
+    @PostMapping("/saveOffre/{id}")
+    public ResponseEntity<String> saveOffre(
+            @PathVariable Long id,
+            Authentication authentication) {
+        offreEmploiService.saveOffre(id, authentication.getName());
+        return ResponseEntity.ok("Offre saved successfully");
+    }
+
+
+    @DeleteMapping("/unsaveOffre/{id}")
+    public ResponseEntity<String> unsaveOffre(
+            @PathVariable Long id,
+            Authentication authentication) {
+        offreEmploiService.unsaveOffre(id, authentication.getName());
+        return ResponseEntity.ok("Offre unsaved successfully");
+    }
+
+
+
+
 }

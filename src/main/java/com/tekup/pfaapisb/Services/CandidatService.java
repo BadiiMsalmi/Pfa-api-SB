@@ -1,14 +1,19 @@
 package com.tekup.pfaapisb.Services;
 
-import com.tekup.pfaapisb.DTO.AuthenticationResponse;
 import com.tekup.pfaapisb.DTO.ProfilCandidatDTO;
 import com.tekup.pfaapisb.Models.Candidat;
-import com.tekup.pfaapisb.Models.Experience;
+import com.tekup.pfaapisb.Models.OffreEmploi;
 import com.tekup.pfaapisb.Repositories.CandidatRepository;
 import com.tekup.pfaapisb.Validators.ObjectsValidator;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,18 +73,29 @@ public class CandidatService {
         profilCandidatValidator.validate(request);
 
         Candidat candidat = candidatRepository.findCandidatByEmail(request.getEmail());
-
-        candidat.setCv(request.getCv());
-        candidat.setCompetences(request.getCompetences());
-        for (Experience experience : request.getExperiences()) {
-            experience.setCandidat(candidat);
+        if (candidat == null) {
+            throw new EntityNotFoundException("Candidat not found with email: " + request.getEmail());
         }
+
+
+        candidat.setCompetences(request.getCompetences());
         candidat.setExperiences(request.getExperiences());
         candidat.setProfileCompleted(true);
 
         candidatRepository.save(candidat);
+    }
 
 
+    public List<OffreEmploi> getSavedOffres(String email) {
+        Candidat candidat = candidatRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Candidat not found"));
+
+        List<OffreEmploi> savedOffres = candidat.getOffreEmploiSauvgarder();
+        if (savedOffres.isEmpty()) {
+            throw new EntityNotFoundException("No saved job offers found for this candidat");
+        }
+
+        return savedOffres;
     }
 
 }

@@ -1,6 +1,8 @@
 package com.tekup.pfaapisb.Services;
 
+import com.tekup.pfaapisb.DTO.OffreEmploiDTO;
 import com.tekup.pfaapisb.Enum.ApplicationStatus;
+import com.tekup.pfaapisb.Enum.OffreStatus;
 import com.tekup.pfaapisb.Models.Application;
 import com.tekup.pfaapisb.Models.Candidat;
 import com.tekup.pfaapisb.Models.OffreEmploi;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -69,6 +72,9 @@ public class ApplicationService {
             throw new RuntimeException("Vous n'êtes pas autorisé à accepter cette application.");
         }
 
+        Optional<OffreEmploi> offreEmploi = offreEmploiRepository.findById(application.getOffre().getId());
+        OffreEmploi emploi = offreEmploi.get();
+        emploi.setStatus(OffreStatus.CLOSED);
         application.setStatus(ApplicationStatus.Accepted);
         applicationRepository.save(application);
     }

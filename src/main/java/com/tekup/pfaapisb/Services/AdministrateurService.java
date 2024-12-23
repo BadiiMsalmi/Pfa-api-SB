@@ -15,20 +15,11 @@ public class AdministrateurService {
     public CompetenceDTO addNewCompetence(CompetenceDTO competenceDTO) {
         Competence competence = new Competence();
         competence.setName(competenceDTO.getName());
-        System.out.println(competenceDTO.getName());
         comptenceRepository.save(competence);
 
         return CompetenceDTO.builder()
-                .id(competence.getId())
                 .name(competence.getName())
                 .build();
     }
 
-    public CompetenceDTO deleteCompetenceById(long id) {
-        Competence competence = comptenceRepository.findById(id).get();
-        comptenceRepository.delete(competence);
-        return CompetenceDTO.builder()
-                .id(competence.getId())
-                .build();
-    }
 }

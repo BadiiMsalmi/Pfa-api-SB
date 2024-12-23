@@ -8,6 +8,5 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CompetenceDTO {
-    private long id;
     private String name;
 }
